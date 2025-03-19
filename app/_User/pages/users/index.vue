@@ -54,13 +54,14 @@ function removeFilter(key: typeof filterKeys[number]) {
 }
 
 // Virtual scrolling logic
-const { fetchUsers, loading, deleteUser } = useUsers()
+const { fetchUsers, loading, deleteUser, deletedId } = useUsers()
 
 const userList = ref<IUser[]>([]) // Store loaded users
 const hasMore = ref(true) // Check if more pages exist
 
 const initialPage = ref(1)
 const initialLimit = ref(6)
+// send api and  locally delete user from the list
 
 const initialUsers = await fetchUsers(getQueryString({ ...filters, page: initialPage, limit: initialLimit }))
 if (initialUsers.value) {
@@ -106,6 +107,12 @@ function resetPagination() {
   hasMore.value = true // Reset hasMore
   loadMoreUsers() // Load users for the first page
 }
+
+watch(() => deletedId.value, (newVal) => {
+  if (newVal) {
+    userList.value = userList.value.filter(user => user._id !== newVal)
+  }
+})
 
 definePageMeta({
   title: 'Home',
@@ -161,7 +168,7 @@ definePageMeta({
         v-for="(user) in userList"
         :key="user._id"
         :user="user"
-        :delete-user="deleteUser"
+        :delete-user=" deleteUser "
         :loading="loading"
       />
     </div>

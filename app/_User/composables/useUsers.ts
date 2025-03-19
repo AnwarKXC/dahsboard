@@ -1,9 +1,8 @@
 import { toast } from 'vue3-toastify'
 
+const deletedId = ref('')
 export default function useUsers() {
   const loading = ref(false)
-
-  const { setUsersData, removeUser } = usersStore()
 
   const { remove } = useApi()
 
@@ -11,7 +10,6 @@ export default function useUsers() {
     try {
       loading.value = true
       const { data } = await useFetch(`/api/user?${queryParams}`)
-      setUsersData(data.value.users)
       return data
     }
     catch (error) {
@@ -25,9 +23,9 @@ export default function useUsers() {
   const deleteUser = async (id: string) => {
     try {
       loading.value = true
-      await remove('user', id)
-      removeUser(id)
-      toast.success('User removed successfully')
+      const res = await remove('user', id)
+      res && (deletedId.value = id)
+      res && toast.success('User removed successfully')
     }
     catch (error) {
       toast.error(error)
@@ -40,6 +38,7 @@ export default function useUsers() {
   return {
     fetchUsers,
     loading,
+    deletedId,
     deleteUser,
   }
 }
