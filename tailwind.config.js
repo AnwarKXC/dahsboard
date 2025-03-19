@@ -2,7 +2,8 @@
 export default {
   darkMode: [ "class" ],
   content: [
-    "./layers/**/*.{js,vue,ts}",
+    "./app/**/*.{js,vue,ts}",
+    "./app/**/**/*.{js,vue,ts}",
     "./app/components/**/*.{js,vue,ts}",
     "./app/layouts/**/*.vue",
     "./app/pages/**/*.vue",
@@ -58,9 +59,7 @@ export default {
     gold: "0 0 0 3px hsla(var(--clr-gold-500), 0.5)",
   },
   
-      borderColor: (theme) => ({
-        DEFAULT: theme("colors.secondary.300", "currentColor"),
-      }),
+
       fontFamily: {
         Rubic: [ "Rubic", "sans-serif", "system-ui" ],
         Poppins: [ "Poppins", "sans-serif", "system-ui" ],
@@ -69,9 +68,7 @@ export default {
         DEFAULT: theme( "colors.secondary.300", "currentColor" ),
       } ),
 
-      textColor: ( theme ) => ( {
-        DEFAULT: theme( "colors.secondary.600", "currentColor" ),
-      } ),
+
     },
   },
   plugins: [
@@ -81,11 +78,9 @@ export default {
         html: {
           fontFamily: "Rubic, sans-serif",
           scrollBehavior: "smooth",
-          backgroundColor: theme( "colors.secondary.200" ),
         },
         body: {
           "line-height": "1.5",
-          fontSize: theme( "fontSize.300" ),
         },
       } )
       addComponents( {

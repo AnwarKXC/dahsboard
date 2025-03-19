@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-:root{
+:root {
   --container-max-width: 1280px;
 
   /* Font sizes for responsive design */
@@ -15,59 +15,43 @@
   --fs-800: clamp(1.5rem, 2.625vw, 2.25rem); /* Large titles */
   --fs-900: clamp(1.875rem, 3vw, 2.625rem); /* Hero text */
 
-  --clr-error: 354, 82%, 61%;
-  --clr-success: 120, 100%, 25%;
-  --clr-warning: 42, 100%, 61%;
-
-  /* primeVue */ 
-  --p-select-border-radius: 2px !important;
-  --p-select-option-border-radius: 2px !important;
-  --p-select-overlay-border-radius: 2px !important;
-}
-
-
-@layer base {
-
-  :root {
-  /* Light mode colors */
   --clr-primary-300: 180, 44%, 72%;
   --clr-primary-400: 180, 100%, 33%;
   --clr-primary-500: 180, 100%, 22%;
-  
-  --clr-secondary-200: 0, 0%, 99%;
-  --clr-secondary-300: 0, 0%, 94%;
-  --clr-secondary-400: 0, 0%, 75%;
-  --clr-secondary-500: 0, 0%, 51%;
-  --clr-secondary-600: 0, 0%, 20%;
 
   --clr-gold-300: 42, 100%, 61%;
   --clr-gold-400: 46, 100%, 38%;
   --clr-gold-500: 46, 87%, 76%;
 
-  --p-select-option-selected-focus-background: hsl(180, 100%, 33%) !important;
-  --p-select-option-selected-background: hsl(180, 100%, 33%) !important;
-  --p-select-placeholder-color: hsl(0, 0%, 51%) !important;
-
+  --clr-error: 354, 82%, 61%;
+  --clr-success: 120, 100%, 25%;
+  --clr-warning: 42, 100%, 61%;
 }
 
-/* Dark mode colors */
-.dark {
-  /* Only change primary and secondary colors */
-  --clr-primary-300: 180, 44%, 35%;
-  --clr-primary-400: 180, 100%, 40%; 
-  --clr-primary-500: 180, 100%, 50%;
-  
-  --clr-secondary-200: 0, 0%, 15%;
-  --clr-secondary-300: 0, 0%, 20%;
-  --clr-secondary-400: 0, 0%, 35%;
-  --clr-secondary-500: 0, 0%, 70%;
-  --clr-secondary-600: 0, 0%, 90%;
-  
-  /* Update PrimeVue colors for dark mode */
-  --p-select-option-selected-focus-background: hsl(180, 100%, 40%) !important;
-  --p-select-option-selected-background: hsl(180, 100%, 40%) !important;
-  --p-select-placeholder-color: hsl(0, 0%, 70%) !important;
-}
+@layer base {
+  :root {
+    --clr-secondary-200: 0, 0%, 92%;
+    --clr-secondary-300: 0, 0%, 84%;
+    --clr-secondary-400: 0, 0%, 75%;
+    --clr-secondary-500: 0, 0%, 51%;
+    --clr-secondary-600: 0, 0%, 20%;
+
+    --p-select-option-selected-focus-background: hsl(180, 100%, 23%) !important;
+    --p-select-option-selected-focus-color: white !important;
+    --p-select-option-selected-background: hsl(180, 100%, 23%) !important;
+    --p-select-option-selected-color: white !important;
+  }
+
+  /* Dark mode colors */
+  .dark {
+    --clr-secondary-200: 0, 0%, 20%;
+    --clr-secondary-300: 0, 0%, 51%;
+    --clr-secondary-400: 0, 0%, 75%;
+    --clr-secondary-500: 0, 0%, 84%;
+    --clr-secondary-600: 0, 0%, 92%;
+
+    --p-select-overlay-background: hsl(0, 0%, 75%) !important;
+  }
 }
 
 /* debugging tool
@@ -76,10 +60,6 @@
 *::after {
  border: 1px solid red;
 } */
-
-:lang(ar) {
-	font-family: "Cairo";
-}
 
 @view-transition {
   navigation: auto;
@@ -93,7 +73,7 @@
 /* General styles */
 input[type='checkbox'],
 input[type='radio'] {
-  @apply size-5 appearance-none text-primary-500 rounded cursor-pointer border-2 transition-all duration-200 ease-in-out me-2 border-gold-400;
+  @apply size-[18px] appearance-none text-primary-500 rounded cursor-pointer border-2 transition-all duration-200 ease-in-out me-2 border-gold-400;
 }
 input[type='radio'] {
   @apply rounded-full;
