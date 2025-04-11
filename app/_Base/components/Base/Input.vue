@@ -99,7 +99,7 @@ defineExpose({
 
 <style scoped>
   input {
-  @apply rounded-md border placeholder:text-secondary-500 dark:placeholder:text-white/40 text-300 w-full p-3   h-[48px] bg-secondary-300 bg-opacity-20   disabled:hover:!border-secondary-300  text-black dark:text-white/80;
+  @apply rounded-md border placeholder:text-secondary-500 dark:placeholder:text-white/40 w-full p-3   h-[48px] bg-secondary-300 bg-opacity-20   disabled:hover:!border-secondary-300  text-black dark:text-white/80;
 }
 input:focus,
 input:focus-within {

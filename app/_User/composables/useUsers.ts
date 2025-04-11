@@ -6,7 +6,7 @@ export default function useUsers() {
 
   const { remove } = useApi()
 
-  const fetchUsers = async (queryParams = ''): Promise<UsersResponse | undefined > => {
+  const fetchUsers = async (queryParams = ''): Promise<Ref<UsersResponse> | undefined > => {
     try {
       loading.value = true
       const { data } = await useFetch(`/api/user?${queryParams}`)

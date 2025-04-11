@@ -1,6 +1,22 @@
 import { type Document, model, type Model, Schema } from 'mongoose'
 
-type UserDocument = Document & IUser
+export interface IUser {
+  _id: Schema.Types.ObjectId
+  name: string
+  email: string
+  phone: string
+  role: Role
+  profileImage: string
+  images: string[]
+  country: string
+  position: Schema.Types.ObjectId
+  status: Status
+  lastSession: Date
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type UserDocument = Document & IUser
 
 interface IUserModel extends Model<UserDocument> {
   updateActiveStatus: () => Promise<void>
@@ -15,8 +31,7 @@ const UserSchema = new Schema<UserDocument>(
     profileImage: { type: String, required: true },
     images: { type: [String], default: [] },
     country: { type: String, required: true },
-    status: { type: String, enum: Status, required: true },
-    position: { type: String, required: true },
+    position: { type: Schema.Types.ObjectId, ref: 'Position', required: true },
     lastSession: { type: Date, default: Date.now },
   },
   { timestamps: true },

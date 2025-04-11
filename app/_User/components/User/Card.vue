@@ -36,7 +36,7 @@ const props = defineProps<{
         <h5> <span class="opacity-70 text-[.85em]">role: </span>{{ user.role }}</h5>
         <h6><span class="opacity-70 text-[.85em]"> Position: </span>{{ user.position }}</h6>
       </div>
-      <div class="space-y-1 text-start text-200">
+      <div class="space-y-1 text-start text-200 overflow-hidden">
         <BaseIconLabel v-if="user.phone" icon="material-symbols:call" :label="user.phone" />
         <BaseIconLabel v-if="user.email" icon="material-symbols:mail" :label="user.email" />
       </div>

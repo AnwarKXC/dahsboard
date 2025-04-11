@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { SelectPosition } from '#components'
 import { useDebounceFn } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
 
@@ -60,7 +61,7 @@ const userList = ref<IUser[]>([]) // Store loaded users
 const hasMore = ref(true) // Check if more pages exist
 
 const initialPage = ref(1)
-const initialLimit = ref(6)
+const initialLimit = ref(9)
 // send api and  locally delete user from the list
 
 const initialUsers = await fetchUsers(getQueryString({ ...filters, page: initialPage, limit: initialLimit }))
@@ -102,15 +103,15 @@ async function loadMoreUsers() {
 }
 
 function resetPagination() {
-  initialPage.value = '1' // Reset to page 1
+  initialPage.value = '0' // Reset to page 0
   userList.value = [] // Clear the user list
   hasMore.value = true // Reset hasMore
   loadMoreUsers() // Load users for the first page
 }
 
-watch(() => deletedId.value, (newVal) => {
+watch(() => deletedId.value, (newVal: string) => {
   if (newVal) {
-    userList.value = userList.value.filter(user => user._id !== newVal)
+    userList.value = userList.value.filter((user: IUser) => user._id.toString() !== newVal)
   }
 })
 
@@ -125,41 +126,52 @@ definePageMeta({
   <main class="space-y-6 mb-6">
     <!-- Filters & Search Inputs -->
     <div class="between flex-wrap gap-4">
-      <div class="grid grid-cols-2 gap-4 max-md:w-full md:max-w-xl">
-        <BaseInput
-          v-model="filters.search.value"
-          placeholder="Search users by name or email"
-          class="lg:min-w-72"
-          @update:model-value="updateSearchFilter"
-        />
-        <BaseDropDown
-          :options="['Admin', 'Employee', 'User']"
-          placeholder="Filter by role"
-          :default-value="filters.role.value"
-          @update:model-value="updateFilter('role', $event)"
-        />
-      </div>
+      <BaseInput
+        v-model="filters.search.value"
+        placeholder="Search users by name or email"
+        class="lg:min-w-72"
+        @update:model-value="updateSearchFilter"
+      />
+
       <BaseButton class="max-md:w-full max-md:order-first" @click="navigateTo(useLocaleR('/users/new'))">
         Add new User
       </BaseButton>
     </div>
+    <div class=" flex  gap-3 w-fit !mt-2">
+      <BaseDropDown
+        :options="Object.values(Role)"
+        placeholder="Sort by Role"
+        :default-value="filters.role"
+        @update:model-value="updateFilter('role', $event)"
+      />
+      <BaseDropDown
+        :options="Object.values(Status)"
+        placeholder="Sort by Status"
+        :default-value="filters.status"
+        @update:model-value="updateFilter('status', $event)"
+      />
+      <SelectPosition
+        placeholder="Sort by Position"
+        :default-value="filters.Position"
+        @update:model-value="updateFilter('position', $event)"
+      />
+    </div>
 
     <!-- Active Filters Section -->
-    <div v-if="filterQuery" class="flex flex-wrap gap-2">
-      <span
+    <div v-if="filterQuery" class="flex flex-wrap gap-2 !mt-2">
+      <button
         v-for="[key, ref] in Object.entries(filters)
           .filter(([k, ref]) => ref.value)"
         :key="key"
-        class="flex items-center gap-2 ps-3 bg-secondary-200 dark:text-white dark:bg-white/20 text-gray-700 rounded-lg text-200"
+        class="flex items-center  text-200 hover:text-red-700 opacity-80"
+        @click="removeFilter(key as typeof filterKeys[number])"
       >
         {{ key }}: <strong>{{ ref.value }}</strong>
-        <button
-          class="text-red-500 hover:bg-gray-300 p-1.5 my-0.5 rounded-lg"
-          @click="removeFilter(key as typeof filterKeys[number])"
-        >
-          ✕
-        </button>
-      </span>
+        <Icon
+          name="ic:baseline-cancel"
+          class=" m-2 text-300"
+        />
+      </button>
     </div>
 
     <!-- User List (Virtual Scrolling) -->
@@ -182,10 +194,8 @@ definePageMeta({
     </ClientOnly>
 
     <!-- Loading Indicator -->
-    <div v-if="loading" class="text-center mt-4">
-      <BaseTypography as="p" size="s" weight="500">
-        Loading more users...
-      </BaseTypography>
+    <div v-if="loading" class="text-center mt-4 h-[50dvh] grid place-content-center">
+      <Icon name="eos-icons-loading" class=" text-primary-300 text-[90px] " />
     </div>
   </main>
 </template>

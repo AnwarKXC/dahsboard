@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 interface FilterQuery {
   role?: string
   position?: string
@@ -7,45 +9,47 @@ interface FilterQuery {
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
-  const page = Number.parseInt(query.page as string, 10) || 1
-  const limit = Number.parseInt(query.limit as string, 10) || 10
-  const role = query.role as string
-  const position = query.position as string
-  const status = query.status as string
-  const search = query.search as string
+
+  // Define schema for query parameters
+  const schema = z.object({
+    page: z.string().optional().default('1'),
+    limit: z.string().optional().default('10'),
+    role: z.string().optional(),
+    position: z.string().optional(),
+    status: z.string().optional(),
+    search: z.string().optional(),
+  })
+
+  // Validate and parse query parameters
+  const parsedQuery = schema.parse(query)
+
+  const page = Number(parsedQuery.page) || 1
+  const limit = Number(parsedQuery.limit) || 10
   const skip = (page - 1) * limit
 
+  const filters: FilterQuery = {}
+
+  // Apply filters dynamically
+  if (parsedQuery.role)
+    filters.role = parsedQuery.role
+  if (parsedQuery.position)
+    filters.position = parsedQuery.position
+  if (parsedQuery.status)
+    filters.status = parsedQuery.status
+
+  if (parsedQuery.search) {
+    filters.$or = [
+      { name: { $regex: parsedQuery.search, $options: 'i' } },
+      { email: { $regex: parsedQuery.search, $options: 'i' } },
+    ]
+  }
+
   try {
-    const filters: FilterQuery = {}
-
-    // Apply role filter
-    if (role && role.trim() !== '') {
-      filters.role = role
-    }
-
-    // Apply position filter
-    if (position && position.trim() !== '') {
-      filters.position = position
-    }
-
-    // Apply status filter
-    if (status && status.trim() !== '') {
-      filters.status = status
-    }
-
-    // Apply search filter (matches name or email)
-    if (search && search.trim() !== '') {
-      filters.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-      ]
-    }
-
     // Fetch users with filters and pagination
-    const users = await User.find(filters).skip(skip).limit(limit).lean()
-
-    // Get total count of users matching filters
-    const totalUsers = await User.countDocuments(filters)
+    const [users, totalUsers] = await Promise.all([
+      User.find(filters).skip(skip).limit(limit).lean(),
+      User.countDocuments(filters),
+    ])
 
     return {
       users,

@@ -3,13 +3,13 @@ export default defineEventHandler(async (event) => {
     const { id } = event.context.params as { id: string }
 
     if (!id || !isValidId(id)) {
-      throw createError({ statusCode: 400, statusMessage: 'Invalid user ID' })
+      return createError({ statusCode: 400, statusMessage: 'Invalid user ID' })
     }
 
     const deletedUser = await User.findByIdAndDelete(id)
 
     if (!deletedUser) {
-      throw createError({ statusCode: 404, statusMessage: 'User not found' })
+      return createError({ statusCode: 404, statusMessage: 'User not found' })
     }
 
     return {
@@ -18,6 +18,6 @@ export default defineEventHandler(async (event) => {
   }
   catch (error) {
     console.error('Error deleting user:', error)
-    throw createError({ statusCode: 500, statusMessage: 'Error deleting user' })
+    return createError({ statusCode: 500, statusMessage: 'Error deleting user' })
   }
 })

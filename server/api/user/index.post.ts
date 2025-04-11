@@ -1,19 +1,24 @@
+import { z } from 'zod'
+
 export default defineEventHandler(async (event) => {
   try {
-    const body = await readBody<IUser>(event)
+    // Define schema for validation
+    const userSchema = z.object({
+      name: z.string().min(1, 'Name is required'),
+      email: z.string().email('Invalid email format'),
+      phone: z.string().min(1, 'Phone is required'),
+      role: z.string().min(1, 'Role is required'),
+      country: z.string().min(1, 'Country is required'),
+      position: z.string().min(1, 'Position is required'),
+    })
 
-    const requiredFields: (keyof IUser)[] = ['name', 'email', 'phone', 'role', 'country', 'position']
-    const missingFields = requiredFields.filter(field => !body[field])
+    // Validate request body
+    const body = await readBody(event)
+    const parsedBody = userSchema.parse(body)
 
-    if (missingFields.length) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: `Missing required fields: ${missingFields.join(', ')}`,
-      })
-    }
-
+    // Create new user
     const newUser = new User({
-      ...body,
+      ...parsedBody,
       status: 'Active',
       lastSession: new Date(),
     })
@@ -23,7 +28,26 @@ export default defineEventHandler(async (event) => {
     return { message: 'User created successfully', user: newUser }
   }
   catch (error: unknown) {
-    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 11000) {
+    if (error instanceof z.ZodError) {
+      // Extract meaningful validation error messages
+      const formattedErrors = error.errors.map(err => ({
+        path: err.path.join('.'),
+        message: err.message,
+      }))
+
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Validation error',
+        data: formattedErrors,
+      })
+    }
+
+    if (
+      typeof error === 'object'
+      && error !== null
+      && 'code' in error
+      && (error as { code: number }).code === 11000
+    ) {
       throw createError({ statusCode: 409, statusMessage: 'Email or phone number already exists' })
     }
 

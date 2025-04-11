@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type CountrySelect from '~/_Base/components/CountrySelect.vue'
-import { BaseDropDown, BasePhoneNumber } from '#components'
 import { toTypedSchema } from '@vee-validate/zod'
 import { toast } from 'vue3-toastify'
 import { z } from 'zod'
+import { validationSchema } from './validation'
 
 const props = defineProps({
   edit: {
@@ -25,31 +24,13 @@ const code = ref(props.edit ? useExtractCountryCode(user.value.data.user.phone)?
 const phone = ref(props.edit ? user.value.data.user.phone.slice(useExtractCountryCode(user.value.data.user.phone)?.countryCode.length) : '')
 const isValid = ref(false)
 
-const { handleSubmit, setFieldValue, resetForm } = useForm({
+const { handleSubmit, setFieldValue, resetForm, errors } = useForm({
   validationSchema: toTypedSchema(
-    z.object({
-      name: z.string().min(1, 'Name is required'),
-      email: z.string().email('Invalid email').min(1, 'Email is required'),
-      phone: z.string().min(10, 'Phone is required'),
-      position: z.string().min(1, 'Position is required'),
-      role: z.nativeEnum(Role),
-      country: z.string().min(1, 'Country is required'),
-      images: z.array(z.string()),
-      profileImage: z.string().min(1, 'Image is required'),
-    }),
+    props.edit
+      ? validationSchema.extend({ status: z.nativeEnum(Status, { message: 'Role is required' }) })
+      : validationSchema,
   ),
-  initialValues: props.edit
-    ? user.value.data.user
-    : {
-        name: '',
-        email: '',
-        position: '',
-        phone: '',
-        role: '',
-        country: '',
-        profileImage: '',
-        images: [],
-      },
+  initialValues: props.edit ? user.value.data.user : undefined,
 })
 const loading = ref(false)
 async function onSubmit() {
@@ -84,7 +65,7 @@ async function onSubmit() {
   <form class=" grid md:grid-cols-2 gap-4 " @submit.prevent="onSubmit">
     <BaseInput is-required name="name" label="Name" placeholder="user name" />
     <BaseInput is-required name="email" label="Email" placeholder="example@gmail.com" type="email" />
-    <BaseInput name="position" label="Position" placeholder="example@gmail.com" is-required />
+    <CountrySelect name="country" placeholder="Select Country" label="Country" is-required />
     <BasePhoneNumber
       v-model:code="code"
       v-model="phone"
@@ -94,8 +75,11 @@ async function onSubmit() {
       label="Phone Number"
       @full-number="setFieldValue('phone', $event)"
     />
-    <BaseDropDown is-required name="role" label="Role" :options="['Admin', 'Employee', 'User']" placeholder="Select user role" />
-    <CountrySelect name="country" placeholder="Select Country" label="Country" is-required />
+    <BaseDropDown is-required name="position" label="Position" :options="Object.values(Position)" placeholder="Select user Position" />
+    <BaseDropDown is-required name="role" label="Role" :options="Object.values(Role)" placeholder="Select user role" />
+    <div class=" col-span-full grid md:grid-cols-2 gap-4">
+      <BaseDropDown v-if="props.edit" is-required name="status" label="Status" :options="Object.values(Status)" placeholder="Select user Status" />
+    </div>
     <div class=" space-y-2">
       <BaseLabel is-required>
         Profile Image

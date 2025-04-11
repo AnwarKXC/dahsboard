@@ -42,6 +42,9 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  error: {
+    type: String,
+  },
 })
 
 // const modelValue = defineModel('modelValue');
@@ -61,9 +64,9 @@ const { value, errorMessage } = useField(() => props.name, undefined, {
       :filter="filter"
       :auto-filter-focus="true"
       v-bind="$attrs"
-      :class="errorMessage ? '!border-error hover:!border-error ' : ''"
+      :class="errorMessage || error ? '!border-error hover:!border-error ' : ''"
     />
-    <span class="text-error text-sm h-1.5 -mt-1">{{ errorMessage }}</span>
+    <span class="text-error text-sm h-1.5 -mt-1">{{ errorMessage || error }}</span>
   </div>
 </template>
 

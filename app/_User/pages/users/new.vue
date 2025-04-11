@@ -2,9 +2,7 @@
 </script>
 
 <template>
-  <main>
-    <UserForm />
-  </main>
+  <UserForm />
 </template>
 
 <style scoped>
